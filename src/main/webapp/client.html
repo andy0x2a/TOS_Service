@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>OAuth Test Client</title>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <style type="text/css">
+        .spaced {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <input type="button" onclick="doGetCode()" value="GET /oauth/authorize">
+    <input type="button" onclick="doPostCode()" value="POST /oauth/token">
+</div>
+<div>
+    Response Type:
+    <select id="responseType" onchange="function doUpdate() {   $('#authp').html(authUri + $('#responseType').val());}
+    doUpdate()">
+        <option value="code">code</option>
+        <option value="token">token</option>
+
+    </select>
+
+</div>
+
+<div id="auth" class="spaced">Auth Endpoint :
+    <pre id="authp"></pre>
+
+</div>
+<div id="token" class="spaced"> Token Endpoint :
+    <pre id="tokenp"></pre>
+
+</div>
+<div id="redirect" class="spaced"> Redirect URI
+    <pre id="redirectp"></pre>
+    Decoded:
+    <pre id="redirectd"></pre>
+</div>
+<div id="authcode" class="spaced"> Auth Code:
+    <pre id="authcodep"></pre>
+</div>
+<div id="result" class="spaced">Result:
+    <pre id="resultp"></pre>
+</div>
+
+<div id="qp" class="spaced">Response URL Parameters:
+    <pre id="qpp"></pre>
+</div>
+
+<script type="text/javascript">
+
+    var redirectUri = 'http%3A%2F%2F10.55.10.184%3A80%2FQTrade_API_DP%2Fclient.html';
+    var authUri = "http://10.55.10.184/QTrade_API_DP/oauth/authorize?client_id=andy&redirect_uri=" + redirectUri + "&scope=read&response_type=";
+    var accessCode = "[UNDEFINED]";
+
+    var tokenUri = getTokenUri();
+
+
+    $(document).ready(function() {
+        console.log("document loaded");
+        var urlVars = getUrlVars();
+        console.log(urlVars);
+        accessCode = urlVars["code"];
+
+        $("#authp").html(authUri + $("#responseType").val());
+        http://10.55.10.184/QTrade_API_DP/client.html#access_token=3557d61d-d28b-4078-8609-3f3e9b1f7f7e&token_type=bearer&expires_in=43199&client_id=andy
+
+                $("#tokenp").html(getTokenUri());
+
+        $("#redirectp").html(redirectUri);
+        $("#redirectd").html(decodeURIComponent(redirectUri));
+        $("#authcodep").html(accessCode);
+
+//
+        //http://10.55.10.184/QTrade_API_DP/oauth/token?
+        // code=EWBbUU
+        // &client_id=andy
+        // &client_secret=SECRET
+        // &redirect_uri=http://10.55.10.184:80/QTrade_API_DP/redirect/
+        // &grant_type=authorization_code
+
+
+    });
+
+    function getTokenUri() {
+
+        return "http://10.55.10.184/QTrade_API_DP/oauth/token?code=" +
+                accessCode +
+                "&redirect_uri=" +
+                redirectUri +
+                "&client_secret=SECRET" +
+                "&client_id=andy" +
+                "&grant_type=authorization_code";
+    }
+
+    function doPostCode() {
+        console.log("POSTING");
+
+//        $("#token").html("token endpoint...:  POST " + tokenUri)
+
+
+        $.post(getTokenUri(),
+                function(data) {
+                    $("#resultp").html("success: " + JSON.stringify(data, undefined, 4));
+                }).fail(function(data) {
+                    $("#resulpt").html("error: " + JSON.stringify(data, undefined, 4));
+                });
+
+    }
+
+    function doGetCode() {
+
+        $("#authp").html(authUri + $("#responseType").val())
+        $.get(authUri + $("#responseType").val(),
+                function(data) {
+                    $("#result").html(data);  //login form
+
+                }).fail(function(data) {
+                    alert("error: " + JSON.stringify(data));
+                });
+
+    }
+
+
+    function getUrlVars() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf
+                ('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+            $("#qpp").append("<br> " + hash[0] + " : " + hash[1])
+        }
+        return vars;
+    }
+
+
+</script>
+
+
+</body>
+</html>
